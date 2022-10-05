@@ -2,6 +2,7 @@ package user
 
 import "time"
 
+//should name with same noun with table name
 type User struct {
 	ID             int
 	Name           string
