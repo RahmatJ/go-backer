@@ -22,6 +22,7 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+
 	userHandler := handler.NewUserHandler(userService)
 
 	router := gin.Default()
@@ -30,7 +31,8 @@ func main() {
 	//will automatically add '/api/v1' in front of each api
 	api := router.Group("/api/v1")
 
-	api.POST("users", userHandler.RegisterUser)
+	api.POST("/users", userHandler.RegisterUser)
+	api.POST("/sessions", userHandler.Login)
 
 	err = router.Run()
 	if err != nil {
