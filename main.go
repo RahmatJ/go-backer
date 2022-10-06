@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"go-backer/handler"
 	"go-backer/user"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -20,29 +22,19 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
 
-	userInput := user.RegisterUserInput{
-		Name:       "name from service",
-		Email:      "mail@mail.com",
-		Occupation: "occupation",
-		Password:   "hai",
-	}
+	router := gin.Default()
 
-	newUser, err := userService.RegisterUser(userInput)
+	//this for API versioning, should mind this
+	//will automatically add '/api/v1' in front of each api
+	api := router.Group("/api/v1")
 
+	api.POST("users", userHandler.RegisterUser)
+
+	err = router.Run()
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-
-	fmt.Println(newUser)
-
-	//router := gin.Default()
-	//router.GET("/handler", handler)
-	//
-	//err := router.Run()
-	//if err != nil {
-	//	log.Fatal(err)
-	//	return
-	//}
 }
