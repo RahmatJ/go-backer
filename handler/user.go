@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-backer/helper"
 	"go-backer/user"
@@ -111,4 +112,52 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 	response := helper.APIResponse(message, http.StatusOK, "succeed", data)
 	c.JSON(http.StatusOK, response)
 
+}
+
+func (h *userHandler) UploadAvatar(c *gin.Context) {
+	//	get input from user
+	//	save images in folder named "images/"
+	//	service will call repository
+	//	will use JWT, but for now will set static ID = 1
+	//	repo will get user ID =1
+	//	update data user with file path
+
+	//get file from input
+	//"avatar" is the field name of input file
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	//	TODO: will get userId from JWT Token later, left it static now
+	userId := 1
+	//path => images/{userId}-{fileName}
+	path := fmt.Sprintf("images/%d-%s", userId, file.Filename)
+
+	//save upload file to some path + filename
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	_, err = h.userService.SaveAvatar(userId, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	data := gin.H{"is_uploaded": true}
+	response := helper.APIResponse("Avatar successfully uploaded", http.StatusBadRequest, "error", data)
+
+	c.JSON(http.StatusBadRequest, response)
 }
