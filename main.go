@@ -38,6 +38,10 @@ func main() {
 
 	router := gin.Default()
 
+	//add route for static file,
+	// /images is for route, and ./images is for folder images
+	router.Static("/images", "./images")
+
 	//this for API versioning, should mind this
 	//will automatically add '/api/v1' in front of each api
 	api := router.Group("/api/v1")
