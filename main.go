@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go-backer/auth"
+	"go-backer/campaign"
 	"go-backer/handler"
 	"go-backer/helper"
 	"go-backer/user"
@@ -26,8 +27,24 @@ func main() {
 	fmt.Println("Connected to DB")
 
 	userRepository := user.NewRepository(db)
+	campaignRepository := campaign.NewRepository(db)
+
+	campaigns, err := campaignRepository.FindByUserID(12)
+
+	fmt.Println("Debug")
+	fmt.Println("Debug")
+	fmt.Println(len(campaigns))
+
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+		if len(campaign.CampaignImages) > 0 {
+			fmt.Println(campaign.CampaignImages[0].FileName)
+		}
+	}
+
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
+
 	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
