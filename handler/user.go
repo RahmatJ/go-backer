@@ -146,7 +146,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	//	TODO: will get userId from JWT Token later, left it static now
+
 	currentUser := c.MustGet("currentUser").(user.User)
 	userId := currentUser.ID
 	//path => images/{userId}-{fileName}
