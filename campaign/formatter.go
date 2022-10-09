@@ -1,6 +1,8 @@
 package campaign
 
-import "strings"
+import (
+	"strings"
+)
 
 type CampaignFormatter struct {
 	ID               int    `json:"id"`

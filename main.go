@@ -53,6 +53,7 @@ func main() {
 
 	api.GET("/campaigns", campaignHandler.GetCampaigns)
 	api.GET("/campaigns/:id", campaignHandler.GetCampaign)
+	api.POST("/campaigns", authMiddleware(authService, userService), campaignHandler.CreateCampaign)
 
 	err = router.Run()
 	if err != nil {
@@ -106,7 +107,7 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 		// so we need to cast it to int
 		userID := int(claim["user_id"].(float64))
 
-		user, err := userService.GetUserByID(userID)
+		authUser, err := userService.GetUserByID(userID)
 		if err != nil {
 			response := helper.APIResponse("UNAUTHORIZED", http.StatusUnauthorized, "error", nil)
 			//to abort this process when failed
@@ -114,6 +115,6 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 			return
 		}
 
-		c.Set("currentUser", user)
+		c.Set("currentUser", authUser)
 	}
 }
