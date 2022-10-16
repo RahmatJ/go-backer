@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-backer/helper"
 	"go-backer/transaction"
+	"go-backer/user"
 	"net/http"
 )
 
@@ -25,6 +26,10 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context) {
 		return
 	}
 
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	input.User = currentUser
+
 	transactions, err := h.service.GetTransactionsByCampaignID(input)
 	if err != nil {
 		response := helper.APIResponse("Failed to get campaign transactions", http.StatusBadRequest, "error", nil)
@@ -32,6 +37,6 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context) {
 		return
 	}
 
-	response := helper.APIResponse("Campaign Transactions", http.StatusOK, "success", transactions)
+	response := helper.APIResponse("Campaign Transactions", http.StatusOK, "success", transaction.FormatCampaignTransactions(transactions))
 	c.JSON(http.StatusOK, response)
 }
